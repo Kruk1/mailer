@@ -1,0 +1,54 @@
+import express, { ErrorRequestHandler, Express, NextFunction, Request, Response } from 'express';
+import dotenv from 'dotenv';
+import Mail from './mail/mail';
+import joi from 'joi'
+const app: Express = express()
+dotenv.config()
+const PORT = process.env.PORT || 5001
+
+function valid(req: Request, res: Response, next: NextFunction)
+{
+    const schemaValidation = joi.object({
+        email: joi.string().email().required(),
+        title: joi.string().required(),
+        text: joi.string().required(),
+        name: joi.string().required()
+    })
+
+    const {error} = schemaValidation.validate(req.body)
+    if(error)
+    {
+        throw new Error('Data didnt pass validation!')
+    }
+    else
+    {
+        next()
+    }
+}
+
+app.use(express.urlencoded({ extended: true }))
+app.use(express.json())
+
+app.post('/mail', valid, async (req: Request, res: Response, next: NextFunction) =>
+{
+    try
+    {
+        const mailer = new Mail(process.env.GOOGLELOGIN as string, process.env.GOOGLEPASSWORD as string, process.env.MYEMAIL as string)
+        await mailer.send(req.body.email, req.body.title, req.body.text, req.body.name)
+        res.status(200).send('Mail sent!')
+    }
+    catch
+    {
+        throw new Error('Something went wrong! Try again')
+    }
+})
+
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => 
+{
+    res.status(500).send(err.message)
+})
+
+app.listen(PORT, () => 
+  {
+    console.log(`Server started on port ${PORT}`)
+  })
