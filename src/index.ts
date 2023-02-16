@@ -29,7 +29,7 @@ function valid(req: Request, res: Response, next: NextFunction)
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 
-app.get('/mail', valid, async (req: Request, res: Response, next: NextFunction) =>
+app.post('/mail', valid, async (req: Request, res: Response, next: NextFunction) =>
 {
     try
     {
