@@ -2,6 +2,7 @@ import express, { ErrorRequestHandler, Express, NextFunction, Request, Response 
 import dotenv from 'dotenv';
 import Mail from './mail/mail';
 import joi from 'joi'
+import cors from 'cors'
 const app: Express = express()
 dotenv.config()
 const PORT = process.env.PORT || 5001
@@ -26,6 +27,7 @@ function valid(req: Request, res: Response, next: NextFunction)
     }
 }
 
+app.use(cors());
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 

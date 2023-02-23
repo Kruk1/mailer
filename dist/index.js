@@ -16,6 +16,7 @@ const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const mail_1 = __importDefault(require("./mail/mail"));
 const joi_1 = __importDefault(require("joi"));
+const cors_1 = __importDefault(require("cors"));
 const app = (0, express_1.default)();
 dotenv_1.default.config();
 const PORT = process.env.PORT || 5001;
@@ -34,6 +35,7 @@ function valid(req, res, next) {
         next();
     }
 }
+app.use((0, cors_1.default)());
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use(express_1.default.json());
 app.post('/mail', valid, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
