@@ -22,17 +22,18 @@ dotenv_1.default.config();
 const PORT = process.env.PORT || 5001;
 function valid(req, res, next) {
     const schemaValidation = joi_1.default.object({
+        name: joi_1.default.string().required().messages({
+            'string.empty': `Name field is empty!`
+        }),
         email: joi_1.default.string().email().required().messages({
-            'string.email': `Email field is empty!`
+            'string.email': `Email isn't correct!`,
+            'string.empty': `Email field is empty!`
         }),
         title: joi_1.default.string().required().messages({
             'string.empty': `Title field is empty!`
         }),
         text: joi_1.default.string().required().messages({
             'string.empty': `Content field is empty!`
-        }),
-        name: joi_1.default.string().required().messages({
-            'string.empty': `Name field is empty!`
         })
     });
     const { error } = schemaValidation.validate(req.body);
