@@ -22,14 +22,22 @@ dotenv_1.default.config();
 const PORT = process.env.PORT || 5001;
 function valid(req, res, next) {
     const schemaValidation = joi_1.default.object({
-        email: joi_1.default.string().email().required(),
-        title: joi_1.default.string().required(),
-        text: joi_1.default.string().required(),
-        name: joi_1.default.string().required()
+        email: joi_1.default.string().email().required().messages({
+            'string.email': `Email field is empty!`
+        }),
+        title: joi_1.default.string().required().messages({
+            'string.empty': `Title field is empty!`
+        }),
+        text: joi_1.default.string().required().messages({
+            'string.empty': `Content field is empty!`
+        }),
+        name: joi_1.default.string().required().messages({
+            'string.empty': `Name field is empty!`
+        })
     });
     const { error } = schemaValidation.validate(req.body);
     if (error) {
-        throw new Error('Data didnt pass validation!');
+        throw new Error(error.details[0].message);
     }
     else {
         next();
@@ -44,7 +52,7 @@ app.post('/mail', valid, (req, res, next) => __awaiter(void 0, void 0, void 0, f
         yield mailer.send(req.body.email, req.body.title, req.body.text, req.body.name);
         res.status(200).send('Mail sent!');
     }
-    catch (_a) {
+    catch (e) {
         throw new Error('Something went wrong! Try again');
     }
 }));

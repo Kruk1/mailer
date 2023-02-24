@@ -10,16 +10,24 @@ const PORT = process.env.PORT || 5001
 function valid(req: Request, res: Response, next: NextFunction)
 {
     const schemaValidation = joi.object({
-        email: joi.string().email().required(),
-        title: joi.string().required(),
-        text: joi.string().required(),
-        name: joi.string().required()
+        email: joi.string().email().required().messages({
+            'string.email': `Email field is empty!`
+          }),
+        title: joi.string().required().messages({
+            'string.empty': `Title field is empty!`
+          }),
+        text: joi.string().required().messages({
+            'string.empty': `Content field is empty!`
+          }),
+        name: joi.string().required().messages({
+            'string.empty': `Name field is empty!`
+          })
     })
 
     const {error} = schemaValidation.validate(req.body)
     if(error)
     {
-        throw new Error('Data didnt pass validation!')
+        throw new Error(error.details[0].message)
     }
     else
     {
@@ -39,7 +47,7 @@ app.post('/mail', valid, async (req: Request, res: Response, next: NextFunction)
         await mailer.send(req.body.email, req.body.title, req.body.text, req.body.name)
         res.status(200).send('Mail sent!')
     }
-    catch
+    catch(e)
     {
         throw new Error('Something went wrong! Try again')
     }
