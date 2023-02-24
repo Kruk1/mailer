@@ -10,18 +10,19 @@ const PORT = process.env.PORT || 5001
 function valid(req: Request, res: Response, next: NextFunction)
 {
     const schemaValidation = joi.object({
+        name: joi.string().required().messages({
+          'string.empty': `Name field is empty!`
+        }),
         email: joi.string().email().required().messages({
-            'string.email': `Email field is empty!`
-          }),
+            'string.email': `Email isn't correct!`,
+            'string.empty': `Email field is empty!`
+        }),
         title: joi.string().required().messages({
             'string.empty': `Title field is empty!`
-          }),
+        }),
         text: joi.string().required().messages({
             'string.empty': `Content field is empty!`
-          }),
-        name: joi.string().required().messages({
-            'string.empty': `Name field is empty!`
-          })
+        })
     })
 
     const {error} = schemaValidation.validate(req.body)
